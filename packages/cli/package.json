@@ -1,5 +1,5 @@
 {
-  "name": "@zee/cli",
+  "name": "@zeefi/cli",
   "version": "1.0.0",
   "main": "./build/cli.js",
   "author": "Srinivas Valekar <https://github.com/valekar>",
