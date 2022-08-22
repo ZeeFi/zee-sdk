@@ -1,4 +1,10 @@
-import { AptosAccount, HexString, TxnBuilderTypes, Types } from 'aptos';
+import {
+  AptosAccount,
+  HexString,
+  MaybeHexString,
+  TxnBuilderTypes,
+  Types,
+} from 'aptos';
 import * as fs from 'fs';
 import * as yaml from 'yaml';
 import { AptosClient } from 'aptos';
@@ -36,18 +42,18 @@ export const aptosClient = new AptosClient(NODE_URL);
 // send transaction
 export const sendTransaction = async (
   client: AptosClient,
-  account: AptosAccount,
+  wallet: AptosAccount,
   scriptFunctionPayload: TxnBuilderTypes.TransactionPayloadEntryFunction
 ) => {
   // Create a raw transaction out of the transaction payload
   const rawTxn = await client.generateRawTransaction(
-    account.address(),
+    wallet.address(),
     scriptFunctionPayload,
     { maxGasAmount: 1000n, gastUnitPrice: 2n }
   );
 
   // Sign the raw transaction with private key
-  const bcsTxn = AptosClient.generateBCSTransaction(account, rawTxn);
+  const bcsTxn = AptosClient.generateBCSTransaction(wallet, rawTxn);
   // Submit the transaction
   const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);
 
@@ -56,4 +62,9 @@ export const sendTransaction = async (
     transactionRes.hash
   )) as Types.UserTransaction;
   console.log(txDetails);
+};
+
+export const getAptosAccount = (wallet: MaybeHexString) => {
+  const privateKey: HexString = HexString.ensure(wallet);
+  return new AptosAccount(privateKey.toUint8Array());
 };

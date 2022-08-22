@@ -1,6 +1,9 @@
 import { BCS, TxnBuilderTypes } from 'aptos';
 
-const buildInitializeScriptFunction = (version: number, oracleName: string) => {
+const buildInitializeScriptFunction = (args: {
+  version: number;
+  oracleName: string;
+}) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
     TxnBuilderTypes.EntryFunction.natural(
       // Fully qualified module name, `AccountAddress::ModuleName`
@@ -8,12 +11,12 @@ const buildInitializeScriptFunction = (version: number, oracleName: string) => {
       // Module function
       'initialize',
       [],
-      [BCS.bcsSerializeU8(version), BCS.bcsSerializeStr(oracleName)]
+      [BCS.bcsSerializeU8(args.version), BCS.bcsSerializeStr(args.oracleName)]
     )
   );
 };
 
-const buildGetFeedScriptFunction = () => {
+const buildGetFeedScriptFunction = ({}) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
     TxnBuilderTypes.EntryFunction.natural(
       // Fully qualified module name, `AccountAddress::ModuleName`
@@ -26,11 +29,11 @@ const buildGetFeedScriptFunction = () => {
   );
 };
 
-const buildAddFeedScriptFunction = (
-  price: number,
-  decimals: number,
-  lastUpdate: string
-) => {
+const buildAddFeedScriptFunction = (args: {
+  price: number;
+  decimals: number;
+  lastUpdate: string;
+}) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
     TxnBuilderTypes.EntryFunction.natural(
       // Fully qualified module name, `AccountAddress::ModuleName`
@@ -39,9 +42,9 @@ const buildAddFeedScriptFunction = (
       'add_feed',
       [],
       [
-        BCS.bcsSerializeU128(price),
-        BCS.bcsSerializeU8(decimals),
-        BCS.bcsSerializeStr(lastUpdate),
+        BCS.bcsSerializeU128(args.price),
+        BCS.bcsSerializeU8(args.decimals),
+        BCS.bcsSerializeStr(args.lastUpdate),
       ]
     )
   );
