@@ -1,5 +1,8 @@
+import { AptosAccount } from 'aptos';
+
 interface BaseApiArgs {
-  wallet: any;
+  wallet?: any;
+  aptosAccount?: AptosAccount;
   clusterUrl: string;
 }
 

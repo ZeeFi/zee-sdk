@@ -1,4 +1,4 @@
-import { MaybeHexString } from 'aptos';
+import { AptosAccount, MaybeHexString } from 'aptos';
 
 import { AptosClient } from 'aptos';
 import { getAptosAccount, sendTransaction } from './utils';
@@ -16,7 +16,17 @@ import {
 // todo add init token oracle
 const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
   try {
-    let sender: MaybeHexString = args.wallet.account;
+    let sender: AptosAccount | null = null;
+    if (args.aptosAccount) {
+      sender = args.aptosAccount;
+    } else {
+      sender = getAptosAccount(args.wallet.account);
+    }
+
+    if (sender == null) {
+      throw new Error('Wallet not provided');
+    }
+
     const aptosClient = new AptosClient(args.clusterUrl);
 
     const initializeTokensOracleScript = buildInitializeScriptFunction({
@@ -24,11 +34,7 @@ const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
       oracleName: args.oracleName,
     });
 
-    await sendTransaction(
-      aptosClient,
-      getAptosAccount(sender),
-      initializeTokensOracleScript
-    );
+    await sendTransaction(aptosClient, sender, initializeTokensOracleScript);
   } catch (err) {
     throw err;
   }
@@ -36,16 +42,24 @@ const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
 
 const addFeedV1 = async (args: AddFeedApiArgs) => {
   try {
-    let sender: MaybeHexString = args.wallet.account;
+    let sender: AptosAccount | null = null;
+    if (args.aptosAccount) {
+      sender = args.aptosAccount;
+    } else {
+      sender = getAptosAccount(args.wallet.account);
+    }
+    if (sender == null) {
+      throw new Error('Wallet not provided');
+    }
     const aptosClient = new AptosClient(args.clusterUrl);
 
     const addFeedScript = buildAddFeedScriptFunction({
       price: args.price,
       decimals: args.decimals,
-      lastUpdate: new Date().toDateString(),
+      lastUpdate: Date.now().toString(),
     });
 
-    await sendTransaction(aptosClient, getAptosAccount(sender), addFeedScript);
+    await sendTransaction(aptosClient, sender, addFeedScript);
   } catch (err) {
     throw err;
   }
@@ -53,13 +67,23 @@ const addFeedV1 = async (args: AddFeedApiArgs) => {
 
 const getFeed = async (args: GetFeedApiArgs) => {
   try {
-    let sender: MaybeHexString = args.wallet.account;
+    let sender: AptosAccount | null = null;
+    if (args.aptosAccount) {
+      sender = args.aptosAccount;
+    } else {
+      sender = getAptosAccount(args.wallet.account);
+    }
+    if (sender == null) {
+      throw new Error('Wallet not provided');
+    }
     const aptosClient = new AptosClient(args.clusterUrl);
 
     const getFeedScript = buildGetFeedScriptFunction({});
 
-    await sendTransaction(aptosClient, getAptosAccount(sender), getFeedScript);
+    await sendTransaction(aptosClient, sender, getFeedScript);
   } catch (err) {}
 };
+
+//const getAccFeeds = async (args : )
 
 export { initializeTokensOracleV1, addFeedV1, getFeed };
