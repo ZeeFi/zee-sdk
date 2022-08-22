@@ -37,15 +37,15 @@
     ]
   },
   "dependencies": {
-    "@zee/oracle-sdk" : "../oracle-sdk/dist",
-    "aptos" : "^1.3.7",
-    "yaml":"^2.1.1",
+    "@zee/oracle-sdk": "../oracle-sdk/dist",
+    "aptos": "^1.3.7",
     "cli-progress": "^3.10.0",
     "commander": "^9.1.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
     "mime": "^3.0.0",
-    "weighted": "^1.0.0"
+    "weighted": "^1.0.0",
+    "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
@@ -55,5 +55,6 @@
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "jest": "^27.5.1",
     "typescript": "^4.6.3"
-  }
+  },
+  "gitHead": "4d94dd8b25df410b1d68e3321bb8b86b8fec9ee5"
 }
