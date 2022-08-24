@@ -7,4 +7,4 @@ export const NODE_URL = DEVNET_NODE_URL;
 export const FAUCET_URL = DEVNET_FAUCET_URL;
 
 export const MODULE_NAME =
-  '0xce938e214d7b44a98a9acf23ecc1b507e453c143d1026a935834271df6f5f07e::tokens';
+  '0xe96492a1b4527f7ea41dafe83584103e05f3d557ad751a7b8c35b87815001b2b::tokens';
