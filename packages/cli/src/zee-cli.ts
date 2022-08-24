@@ -30,22 +30,25 @@ function errorColor(str: string) {
   return `\x1b[31m${str}\x1b[0m`;
 }
 
-export const CONFIG_PATH = '../../oracle/ap_oracle/.aptos/config.yaml';
+export const CONFIG_PATH = 'cli/.aptos/config.yaml';
 
 /********************* Add Feed  command **********************/
 
-program
-  .command('tokens:add-feed')
+programCommand('tokens:add-feed')
   .description('')
   .argument('<price>')
   .argument('<decimals>')
-  .action(async (price: string, decimals: string) => {
-    let config = zee.utils.readConfig(CONFIG_PATH);
+  .action(async (price: string, decimals: string, options) => {
+    //let config = zee.utils.readConfig(CONFIG_PATH);
+
+    let { profile, config } = options;
+    //console.log(config);
+    let configPath = zee.utils.readConfig(config);
 
     await zee.api.addFeedV1({
       price: +price,
       decimals: +decimals,
-      aptosAccount: config.account,
+      aptosAccount: configPath.account,
       clusterUrl: zee.config.DEVNET_NODE_URL,
     });
   });
@@ -53,14 +56,15 @@ program
 
 /********************* Get Feed  command **********************/
 
-program
-  .command('tokens:get-feed')
+programCommand('tokens:get-feed')
   .description('')
-  .action(async () => {
-    let config = zee.utils.readConfig(CONFIG_PATH);
+  .action(async (options) => {
+    let { profile, config } = options;
+    //console.log(config);
+    let configPath = zee.utils.readConfig(config);
 
     let resources = await config.client.getAccountResources(
-      config.account.address()
+      configPath.account.address()
     );
 
     console.log(
@@ -74,18 +78,20 @@ program
 
 /********************* Initialize command **********************/
 
-program
-  .command('tokens:initialize')
+programCommand('tokens:initialize')
   .description('')
   .argument('<id>')
   .argument('<name>')
   .argument('<symbol>')
-  .action(async (id: string, name: string, symbol: string) => {
-    let config = zee.utils.readConfig(CONFIG_PATH);
+  .action(async (id, name, symbol, options) => {
+    let { profile, config } = options;
+
+    //console.log(config);
+    let configPath = zee.utils.readConfig(config);
 
     await zee.api.initializeTokensOracleV1({
       clusterUrl: zee.config.DEVNET_NODE_URL,
-      aptosAccount: config.account,
+      aptosAccount: configPath.account,
       version: +id,
       oracleName: name,
       oracleSymbol: symbol,

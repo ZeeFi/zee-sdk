@@ -17,9 +17,9 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "lib": ["dom", "es2019"],
-    "types": ["jest", "node", "webgl2"]
+    "types": ["jest", "node"]
   },
-  "exclude": ["node_modules", "typings/browser", "typings/browser.d.ts"],
+  "exclude": ["node_modules"],
   "atom": {
     "rewriteTsconfig": false
   }
