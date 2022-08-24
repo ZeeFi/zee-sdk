@@ -33,6 +33,7 @@ const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
     const initializeTokensOracleScript = buildInitializeScriptFunction({
       version: args.version,
       oracleName: args.oracleName,
+      oracleSymbol: args.oracleSymbol,
       moduleName: MODULE_NAME,
     });
 

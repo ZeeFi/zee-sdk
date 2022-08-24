@@ -1,7 +1,7 @@
 import log from 'loglevel';
 import { program } from 'commander';
 
-import * as zee from '@zee/oracle-sdk';
+import * as zee from '@zeefi/oracle-sdk';
 
 program.version('0.0.1');
 log.setLevel(log.levels.INFO);
@@ -79,7 +79,8 @@ program
   .description('')
   .argument('<id>')
   .argument('<name>')
-  .action(async (id: string, name: string) => {
+  .argument('<symbol>')
+  .action(async (id: string, name: string, symbol: string) => {
     let config = zee.utils.readConfig(CONFIG_PATH);
 
     await zee.api.initializeTokensOracleV1({
@@ -87,6 +88,7 @@ program
       aptosAccount: config.account,
       version: +id,
       oracleName: name,
+      oracleSymbol: symbol,
     });
   });
 

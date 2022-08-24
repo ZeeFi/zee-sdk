@@ -1818,8 +1818,12 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@zee/oracle-sdk@../oracle-sdk/dist":
-  version "0.0.0"
+"@zeefi/oracle-sdk@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@zeefi/oracle-sdk/-/oracle-sdk-1.0.1.tgz#2fa1d45aef516a52db7512add1de043249452145"
+  integrity sha512-yj6/X4UkLIl5yCZdyNzcUyGxAUf8RlU36trpuWT+sOaz6hOQ+Rif76QBRQSgLMXJmfoOSeeVM/q+wwxifPwMPg==
+  dependencies:
+    aptos "^1.3.7"
 
 abab@^2.0.0, abab@^2.0.3, abab@^2.0.5:
   version "2.0.6"

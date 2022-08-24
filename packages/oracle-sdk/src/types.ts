@@ -9,6 +9,7 @@ interface BaseApiArgs {
 export interface InitializeTokenOracleApiArgs extends BaseApiArgs {
   version: number;
   oracleName: string;
+  oracleSymbol: string;
 }
 
 export interface AddFeedApiArgs extends BaseApiArgs {

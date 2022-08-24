@@ -3,6 +3,7 @@ import { BCS, TxnBuilderTypes } from 'aptos';
 const buildInitializeScriptFunction = (args: {
   version: number;
   oracleName: string;
+  oracleSymbol: string;
   moduleName: string;
 }) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
@@ -12,7 +13,11 @@ const buildInitializeScriptFunction = (args: {
       // Module function
       'initialize',
       [],
-      [BCS.bcsSerializeU8(args.version), BCS.bcsSerializeStr(args.oracleName)]
+      [
+        BCS.bcsSerializeU8(args.version),
+        BCS.bcsSerializeStr(args.oracleName),
+        BCS.bcsSerializeStr(args.oracleSymbol),
+      ]
     )
   );
 };
