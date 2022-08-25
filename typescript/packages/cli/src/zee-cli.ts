@@ -9,7 +9,7 @@ log.setLevel(log.levels.INFO);
 export function programCommand(name: string) {
   return program
     .command(name)
-    .requiredOption(
+    .option(
       '-c, --config <path>',
       'path to your aptos config.yml (generated with "aptos init")'
     )
@@ -30,7 +30,8 @@ function errorColor(str: string) {
   return `\x1b[31m${str}\x1b[0m`;
 }
 
-export const CONFIG_PATH = 'cli/.aptos/config.yaml';
+export const CONFIG_PATH =
+  '/Users/valekar/Projects/zee/zee-sdk/packages/cli/.aptos/config.yaml';
 
 /********************* Add Feed  command **********************/
 
@@ -39,11 +40,11 @@ programCommand('tokens:add-feed')
   .argument('<price>')
   .argument('<decimals>')
   .action(async (price: string, decimals: string, options) => {
-    //let config = zee.utils.readConfig(CONFIG_PATH);
-
     let { profile, config } = options;
     //console.log(config);
-    let configPath = zee.utils.readConfig(config);
+    //let configPath = zee.utils.readConfig(config);
+
+    let configPath = zee.utils.readConfig(CONFIG_PATH);
 
     await zee.api.addFeedV1({
       price: +price,
