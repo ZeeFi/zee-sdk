@@ -11,7 +11,7 @@ use hex::ToHex;
 use rand::{rngs::OsRng, Rng, RngCore, SeedableRng};
 use tiny_keccak::{Hasher, Sha3};
 
-pub const TESTNET_URL: &str = "https://fullnode.devnet.aptoslabs.com/v1";
+pub const DEVNET_URL: &str = "https://fullnode.devnet.aptoslabs.com/v1";
 pub const FAUCET_URL: &str = "https://faucet.devnet.aptoslabs.com";
 
 pub struct Account {
