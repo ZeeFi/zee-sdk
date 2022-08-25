@@ -1,5 +1,5 @@
 use lib::*;
 
-fn main() {
-    println!("Hello, world!");
-}
+mod lib;
+
+fn main() {}

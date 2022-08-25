@@ -14,7 +14,6 @@ use tiny_keccak::{Hasher, Sha3};
 pub const TESTNET_URL: &str = "https://fullnode.devnet.aptoslabs.com/v1";
 pub const FAUCET_URL: &str = "https://faucet.devnet.aptoslabs.com";
 
-//:!:>section_1
 pub struct Account {
     signing_key: SecretKey,
 }
@@ -55,9 +54,7 @@ impl Account {
         hex::encode(PublicKey::from(&self.signing_key).as_bytes())
     }
 }
-//<:!:section_1
 
-//:!:>section_2
 #[derive(Clone)]
 pub struct RestClient {
     url: String,
@@ -291,9 +288,7 @@ impl RestClient {
         res.get("hash").unwrap().as_str().unwrap().to_string()
     }
 }
-//<:!:section_5
 
-//:!:>section_6
 pub struct FaucetClient {
     url: String,
     rest_client: RestClient,
