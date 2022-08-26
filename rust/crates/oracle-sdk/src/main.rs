@@ -48,8 +48,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!("The balance is {}", result);
 
+    // let pending_transaction = oracle_client
+    //     .initialize_oracle(oracle_account, 1, "Eth Oracle", "ETH", None)
+    //     .await
+    //     .unwrap()
+    //     .into_inner();
+
     let pending_transaction = oracle_client
-        .initialize_oracle(oracle_account, 1, "Eth Oracle", "ETH", None)
+        .add_feed(oracle_account, 1900000, 3, "20220826".to_string(), None)
         .await
         .unwrap()
         .into_inner();
