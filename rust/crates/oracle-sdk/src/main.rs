@@ -2,7 +2,11 @@ use std::error::Error;
 
 use aptos_sdk::{
     crypto::{ed25519::Ed25519PrivateKey, PrivateKey},
-    rest_client::{self, FaucetClient, Transaction},
+    rest_client::{
+        self,
+        //FaucetClient,
+        Transaction,
+    },
     types::{
         account_address::AccountAddress, transaction::authenticator::AuthenticationKey,
         LocalAccount,
@@ -18,7 +22,6 @@ mod lib;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let oracle_client = OracleClient::new(rest_client::Client::new(oracle::NODE_URL.clone()));
-    let faucet_client = FaucetClient::new(oracle::FAUCET_URL.clone(), oracle::NODE_URL.clone());
 
     let config: OracleConfig = OracleConfig::read_config(".aptos/config.yaml").unwrap();
 
@@ -37,6 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let oracle_account = &mut LocalAccount::new(sender_address, key, sequence_number);
 
+    //let faucet_client = FaucetClient::new(oracle::FAUCET_URL.clone(), oracle::NODE_URL.clone());
     //faucet_client.fund(oracle_account.address(), 5_000).await?;
 
     let result = oracle_client
@@ -49,13 +53,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("The balance is {}", result);
 
     // let pending_transaction = oracle_client
-    //     .initialize_oracle(oracle_account, 1, "Eth Oracle", "ETH", None)
+    //     .initialize_oracle(sender_address, oracle_account, 1, "Eth Oracle", "ETH", None)
     //     .await
     //     .unwrap()
     //     .into_inner();
 
     let pending_transaction = oracle_client
-        .add_feed(oracle_account, 1900000, 3, "20220826".to_string(), None)
+        .add_feed(
+            sender_address,
+            oracle_account,
+            1900000,
+            3,
+            "20220826".to_string(),
+            None,
+        )
         .await
         .unwrap()
         .into_inner();

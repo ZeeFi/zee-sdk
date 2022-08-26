@@ -1,6 +1,6 @@
 use aptos_sdk::{
     crypto::_once_cell::sync::Lazy,
-    move_types::{account_address, identifier::Identifier, language_storage::ModuleId},
+    move_types::{identifier::Identifier, language_storage::ModuleId},
     rest_client::{Client as ApiClient, PendingTransaction, Response},
     transaction_builder::TransactionBuilder,
     types::{
@@ -18,10 +18,18 @@ use url::Url;
 
 use super::error::{OracleError, OracleTypedResult};
 
-pub const MODULE_ID: &str = "0xe96492a1b4527f7ea41dafe83584103e05f3d557ad751a7b8c35b87815001b2b"; //::tokens
 pub const MODULE_NAME: &str = "tokens";
 pub const APTOS_NODE_URL: &str = "https://fullnode.devnet.aptoslabs.com";
-pub const APTOS_FAUCET_URL: &str = "https://faucet.devnet.aptoslabs.com";
+// pub const APTOS_FAUCET_URL: &str = "https://faucet.devnet.aptoslabs.com";
+// pub static FAUCET_URL: Lazy<Url> = Lazy::new(|| {
+//     Url::from_str(
+//         std::env::var("APTOS_FAUCET_URL")
+//             .as_ref()
+//             .map(|s| s.as_str())
+//             .unwrap_or(APTOS_FAUCET_URL),
+//     )
+//     .unwrap()
+// });
 
 pub static NODE_URL: Lazy<Url> = Lazy::new(|| {
     Url::from_str(
@@ -29,16 +37,6 @@ pub static NODE_URL: Lazy<Url> = Lazy::new(|| {
             .as_ref()
             .map(|s| s.as_str())
             .unwrap_or(APTOS_NODE_URL),
-    )
-    .unwrap()
-});
-
-pub static FAUCET_URL: Lazy<Url> = Lazy::new(|| {
-    Url::from_str(
-        std::env::var("APTOS_FAUCET_URL")
-            .as_ref()
-            .map(|s| s.as_str())
-            .unwrap_or(APTOS_FAUCET_URL),
     )
     .unwrap()
 });
@@ -71,10 +69,7 @@ impl OracleClient {
         Self { api_client }
     }
 
-    pub fn get_module_id() -> ModuleId {
-        let module_account_address =
-            account_address::AccountAddress::from_hex_literal(MODULE_ID).unwrap();
-
+    pub fn get_module(&self, module_account_address: AccountAddress) -> ModuleId {
         let module_name = Identifier::new(MODULE_NAME).unwrap();
         ModuleId::new(module_account_address, module_name)
     }
@@ -120,6 +115,7 @@ impl OracleClient {
 
     pub async fn add_feed(
         &self,
+        module_account_address: AccountAddress,
         account: &mut LocalAccount,
         price: u128,
         decimals: u8,
@@ -127,7 +123,7 @@ impl OracleClient {
         options: Option<TransactionOptions>,
     ) -> OracleTypedResult<Response<PendingTransaction>> {
         let entry_function = EntryFunction::new(
-            OracleClient::get_module_id(),
+            self.get_module(module_account_address),
             Identifier::new("add_feed").unwrap(),
             vec![],
             vec![
@@ -149,6 +145,7 @@ impl OracleClient {
 
     pub async fn initialize_oracle(
         &self,
+        module_account_address: AccountAddress,
         account: &mut LocalAccount,
         version: u8,
         oracle_name: &str,
@@ -156,7 +153,7 @@ impl OracleClient {
         options: Option<TransactionOptions>,
     ) -> OracleTypedResult<Response<PendingTransaction>> {
         let entry_function = EntryFunction::new(
-            OracleClient::get_module_id(),
+            self.get_module(module_account_address),
             Identifier::new("initialize").unwrap(),
             vec![],
             vec![

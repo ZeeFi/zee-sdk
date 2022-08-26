@@ -14,17 +14,17 @@ pub enum OracleError {
     TransactionError(String),
 }
 
-impl OracleError {
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            OracleError::UnableToParse(_, _) => "UnableToParse",
-            OracleError::UnableToReadFile(_, _) => "UnableToReadFile",
-            OracleError::UnexpectedError(_) => "UnexpectedError",
-            OracleError::InstructionExecutionError(_) => "InstructionExecutionError",
-            OracleError::TransactionError(_) => "TransactionError",
-        }
-    }
-}
+// impl OracleError {
+//     pub fn to_str(&self) -> &'static str {
+//         match self {
+//             OracleError::UnableToParse(_, _) => "UnableToParse",
+//             OracleError::UnableToReadFile(_, _) => "UnableToReadFile",
+//             OracleError::UnexpectedError(_) => "UnexpectedError",
+//             OracleError::InstructionExecutionError(_) => "InstructionExecutionError",
+//             OracleError::TransactionError(_) => "TransactionError",
+//         }
+//     }
+// }
 
 /// A common result to remove need for typing `Result<T, OracleError>`
 pub type OracleTypedResult<T> = Result<T, OracleError>;
