@@ -2,7 +2,7 @@ use std::error::Error;
 
 use aptos_sdk::{
     crypto::{ed25519::Ed25519PrivateKey, PrivateKey},
-    rest_client::{self, aptos::Balance, FaucetClient, Transaction},
+    rest_client::{self, FaucetClient, Transaction},
     types::{
         account_address::AccountAddress, transaction::authenticator::AuthenticationKey,
         LocalAccount,

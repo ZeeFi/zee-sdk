@@ -11,7 +11,6 @@ use aptos_sdk::{
     },
 };
 use std::{
-    error::Error,
     str::FromStr,
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -74,7 +73,7 @@ impl OracleClient {
 
     pub fn get_module_id() -> ModuleId {
         let module_account_address =
-            account_address::AccountAddress::from_bytes(MODULE_ID.as_bytes()).unwrap();
+            account_address::AccountAddress::from_hex_literal(MODULE_ID).unwrap();
 
         let module_name = Identifier::new(MODULE_NAME).unwrap();
         ModuleId::new(module_account_address, module_name)

@@ -26,5 +26,5 @@ impl OracleError {
     }
 }
 
-/// A common result to remove need for typing `Result<T, CliError>`
+/// A common result to remove need for typing `Result<T, OracleError>`
 pub type OracleTypedResult<T> = Result<T, OracleError>;
