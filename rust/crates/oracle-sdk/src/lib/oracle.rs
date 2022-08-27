@@ -1,7 +1,7 @@
 use aptos_sdk::{
     crypto::_once_cell::sync::Lazy,
     move_types::{identifier::Identifier, language_storage::ModuleId},
-    rest_client::{Client as ApiClient, PendingTransaction, Response},
+    rest_client::{Account, Client as ApiClient, PendingTransaction, Response},
     transaction_builder::TransactionBuilder,
     types::{
         account_address::AccountAddress,
@@ -64,6 +64,7 @@ pub struct OracleClient {
     pub api_client: ApiClient,
 }
 
+#[allow(dead_code)]
 impl OracleClient {
     pub fn new(api_client: ApiClient) -> Self {
         Self { api_client }
@@ -117,6 +118,7 @@ impl OracleClient {
         &self,
         module_account_address: AccountAddress,
         account: &mut LocalAccount,
+        aggregator_id: u8,
         source_name: &str,
         options: Option<TransactionOptions>,
     ) -> OracleTypedResult<Response<PendingTransaction>> {
@@ -124,7 +126,10 @@ impl OracleClient {
             self.get_module(module_account_address),
             Identifier::new("initialize_aggregator").unwrap(),
             vec![],
-            vec![bcs::to_bytes(&source_name).unwrap()],
+            vec![
+                bcs::to_bytes(&aggregator_id).unwrap(),
+                bcs::to_bytes(&source_name).unwrap(),
+            ],
         );
 
         self.send_transaction(account, entry_function, options)
@@ -195,5 +200,34 @@ impl OracleClient {
                     err.to_string()
                 ))
             })
+    }
+
+    pub async fn get_feed(
+        &self,
+        //module_account_address: AccountAddress,
+        account: &mut LocalAccount,
+        token_symbol: &str,
+    ) -> OracleTypedResult<()> {
+        let resource_resp = self.api_client
+            .get_account_resource(
+                account.address(),
+                "0x262715fea1109c185b8f654818478caf057fe22445e9c986bd7ee295702f0e4f::tokens::Aggregator",
+            )
+            .await
+            .map_err(|err| {
+                OracleError::FetchError(format!(
+                    "Failed to get_feed for symbol {} : {}",
+                    token_symbol,
+                    err.to_string()
+                ))
+            }).unwrap();
+
+        let resource = resource_resp.inner().as_ref().unwrap();
+
+        //resource.data
+
+        info!("{}", resource.data);
+
+        Ok(())
     }
 }

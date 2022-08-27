@@ -36,22 +36,10 @@ pub struct ProfileConfig {
 pub struct OracleConfig {
     /// Map of profile configs
     pub profiles: Option<HashMap<String, ProfileConfig>>,
-    pub path: String,
+    //pub path: String,
 }
 
 impl OracleConfig {
-    pub fn new(load_path: Option<String>) -> Self {
-        let path = match load_path {
-            Some(value) => value,
-            None => ".aptos/config.yaml".to_string(),
-        };
-
-        Self {
-            profiles: Some(HashMap::new()),
-            path,
-        }
-    }
-
     pub fn read_config<T: DeserializeOwned>(path: &str) -> OracleTypedResult<T> {
         let read_file = Self::read_from_file(Path::new(path))?;
 
@@ -76,7 +64,7 @@ impl OracleConfig {
     }
 
     pub fn from_yaml<T: DeserializeOwned>(input: &str) -> OracleTypedResult<T> {
-        println!("The input is {} ", input);
+        //println!("The input is {} ", input);
         serde_yaml::from_str(input).map_err(|err| {
             OracleError::UnableToParse(
                 format!("Error at Oracle_config::from_yaml function {}", input),
@@ -92,10 +80,11 @@ impl OracleConfig {
 
     pub async fn load_default_account(
         oracle_client: &OracleClient,
+        config_path: &str,
     ) -> OracleTypedResult<LocalAccount> {
         // println!("The path is {}", &self.path);
 
-        let config: OracleConfig = match OracleConfig::read_config("./.aptos/config.yaml") {
+        let config: OracleConfig = match OracleConfig::read_config(config_path) {
             Ok(result) => result,
             Err(err) => {
                 return Err(OracleError::UnableToReadFile(
