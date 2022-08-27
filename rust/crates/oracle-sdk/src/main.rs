@@ -39,7 +39,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!("The balance is {}", result);
 
-    // let _pending_transaction = oracle_client
+    /****************************init aggregator ********************************/
+    // let pending_transaction = oracle_client
     //     .initialize_aggregator(
     //         default_account.address(),
     //         default_account,
@@ -50,7 +51,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //     .await
     //     .unwrap()
     //     .into_inner();
-    // let _pending_transaction = oracle_client
+
+    /****************************init token ********************************/
+
+    // let pending_transaction = oracle_client
     //     .initialize_token(
     //         default_account.address(),
     //         default_account,
@@ -62,14 +66,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //     .unwrap()
     //     .into_inner();
 
+    /****************************add feed ********************************/
     // let pending_transaction = oracle_client
     //     .add_feed(
     //         default_account.address(),
     //         default_account,
     //         "ETH",
-    //         2900000,
+    //         900000,
     //         3,
-    //         "20220827",
+    //         "20220927",
     //         None,
     //     )
     //     .await
@@ -84,12 +89,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // println!("The transaction is {}", result.success());
 
-    let _ = oracle_client
-        .get_feed(default_account, "ETH")
+    // let _ = oracle_client
+    //     .get_aggregator_data(default_account)
+    //     .await
+    //     .unwrap();
+
+    let result = oracle_client
+        .get_latest_token_data(default_account, "ETH")
         .await
         .unwrap();
 
-    // println!("The result is {:?}", result.inner());
+    info!("{:?}", result);
 
     Ok(())
 }

@@ -1,7 +1,7 @@
 use aptos_sdk::{
     crypto::_once_cell::sync::Lazy,
     move_types::{identifier::Identifier, language_storage::ModuleId},
-    rest_client::{Account, Client as ApiClient, PendingTransaction, Response},
+    rest_client::{Client as ApiClient, PendingTransaction, Response},
     transaction_builder::TransactionBuilder,
     types::{
         account_address::AccountAddress,
@@ -15,6 +15,8 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use url::Url;
+
+use crate::lib::model::{Aggregator, Token, TokenDetails};
 
 use super::error::{OracleError, OracleTypedResult};
 
@@ -202,34 +204,74 @@ impl OracleClient {
             })
     }
 
-    pub async fn get_feed(
+    pub async fn get_aggregator_data(
         &self,
         //module_account_address: AccountAddress,
-        account: &mut LocalAccount,
-        token_symbol: &str,
+        account: &LocalAccount,
     ) -> OracleTypedResult<()> {
         let resource_resp = self
             .api_client
-            .get_account_resource(
+            .get_resource::<Aggregator>(
                 account.address(),
                 format!("{}::tokens::Aggregator", account.address().to_hex_literal()).as_str(),
             )
             .await
             .map_err(|err| {
                 OracleError::FetchError(format!(
-                    "Failed to get_feed for symbol {} : {}",
+                    "Failed to get_aggregator data {} ",
+                    err.to_string()
+                ))
+            })
+            .unwrap();
+
+        let resource = resource_resp.inner();
+
+        //resource.data
+
+        //let result = serde_json::from_value::<Aggregator>(resource.data.clone()).unwrap();
+
+        info!("{:?}", resource.tokens.data);
+
+        Ok(())
+    }
+
+    pub async fn get_latest_token_data(
+        &self,
+        account: &LocalAccount,
+        token_symbol: &str,
+    ) -> OracleTypedResult<TokenDetails> {
+        let resource_resp = self
+            .api_client
+            .get_resource::<Aggregator>(
+                account.address(),
+                format!("{}::tokens::Aggregator", account.address().to_hex_literal()).as_str(),
+            )
+            .await
+            .map_err(|err| {
+                OracleError::FetchError(format!(
+                    "Failed to get_token data {} :{}",
                     token_symbol,
                     err.to_string()
                 ))
             })
             .unwrap();
 
-        let resource = resource_resp.inner().as_ref().unwrap();
+        let resource = resource_resp.inner();
 
-        //resource.data
+        info!("{:?}", resource);
 
-        info!("{}", resource.data);
+        let token_symbol_data = resource
+            .tokens
+            .data
+            .iter()
+            .filter(|value| value.key == token_symbol)
+            .next()
+            .unwrap();
 
-        Ok(())
+        let latest_token_details_data = token_symbol_data.value.token_details_list.last();
+
+        Ok(latest_token_details_data
+            .unwrap_or(&Default::default())
+            .clone())
     }
 }
