@@ -208,10 +208,11 @@ impl OracleClient {
         account: &mut LocalAccount,
         token_symbol: &str,
     ) -> OracleTypedResult<()> {
-        let resource_resp = self.api_client
+        let resource_resp = self
+            .api_client
             .get_account_resource(
                 account.address(),
-                "0x262715fea1109c185b8f654818478caf057fe22445e9c986bd7ee295702f0e4f::tokens::Aggregator",
+                format!("{}::tokens::Aggregator", account.address().to_hex_literal()).as_str(),
             )
             .await
             .map_err(|err| {
@@ -220,7 +221,8 @@ impl OracleClient {
                     token_symbol,
                     err.to_string()
                 ))
-            }).unwrap();
+            })
+            .unwrap();
 
         let resource = resource_resp.inner().as_ref().unwrap();
 
