@@ -1,7 +1,7 @@
 use aptos_sdk::{
     crypto::_once_cell::sync::Lazy,
     move_types::{identifier::Identifier, language_storage::ModuleId},
-    rest_client::{Client as ApiClient, PendingTransaction, Response},
+    rest_client::{Account, Client as ApiClient, PendingTransaction, Response},
     transaction_builder::TransactionBuilder,
     types::{
         account_address::AccountAddress,
@@ -64,6 +64,7 @@ pub struct OracleClient {
     pub api_client: ApiClient,
 }
 
+#[allow(dead_code)]
 impl OracleClient {
     pub fn new(api_client: ApiClient) -> Self {
         Self { api_client }
@@ -113,13 +114,70 @@ impl OracleClient {
         })
     }
 
+    pub async fn initialize_aggregator(
+        &self,
+        module_account_address: AccountAddress,
+        account: &mut LocalAccount,
+        aggregator_id: u8,
+        source_name: &str,
+        options: Option<TransactionOptions>,
+    ) -> OracleTypedResult<Response<PendingTransaction>> {
+        let entry_function = EntryFunction::new(
+            self.get_module(module_account_address),
+            Identifier::new("initialize_aggregator").unwrap(),
+            vec![],
+            vec![
+                bcs::to_bytes(&aggregator_id).unwrap(),
+                bcs::to_bytes(&source_name).unwrap(),
+            ],
+        );
+
+        self.send_transaction(account, entry_function, options)
+            .await
+            .map_err(|err| {
+                OracleError::InstructionExecutionError(format!(
+                    "The execution of initialize_aggregator failed : {}",
+                    err.to_string()
+                ))
+            })
+    }
+
+    pub async fn initialize_token(
+        &self,
+        module_account_address: AccountAddress,
+        account: &mut LocalAccount,
+        token_name: &str,
+        token_symbol: &str,
+        options: Option<TransactionOptions>,
+    ) -> OracleTypedResult<Response<PendingTransaction>> {
+        let entry_function = EntryFunction::new(
+            self.get_module(module_account_address),
+            Identifier::new("initialize_token").unwrap(),
+            vec![],
+            vec![
+                bcs::to_bytes(&token_name).unwrap(),
+                bcs::to_bytes(&token_symbol).unwrap(),
+            ],
+        );
+
+        self.send_transaction(account, entry_function, options)
+            .await
+            .map_err(|err| {
+                OracleError::InstructionExecutionError(format!(
+                    "The execution of initialize_token failed : {}",
+                    err.to_string()
+                ))
+            })
+    }
+
     pub async fn add_feed(
         &self,
         module_account_address: AccountAddress,
         account: &mut LocalAccount,
+        token_symbol: &str,
         price: u128,
         decimals: u8,
-        last_update: String,
+        last_update: &str,
         options: Option<TransactionOptions>,
     ) -> OracleTypedResult<Response<PendingTransaction>> {
         let entry_function = EntryFunction::new(
@@ -127,6 +185,7 @@ impl OracleClient {
             Identifier::new("add_feed").unwrap(),
             vec![],
             vec![
+                bcs::to_bytes(&token_symbol).unwrap(),
                 bcs::to_bytes(&price).unwrap(),
                 bcs::to_bytes(&decimals).unwrap(),
                 bcs::to_bytes(&last_update).unwrap(),
@@ -143,42 +202,34 @@ impl OracleClient {
             })
     }
 
-    pub async fn initialize_oracle(
+    pub async fn get_feed(
         &self,
-        module_account_address: AccountAddress,
+        //module_account_address: AccountAddress,
         account: &mut LocalAccount,
-        version: u8,
-        oracle_name: &str,
-        oracle_symbol: &str,
-        options: Option<TransactionOptions>,
-    ) -> OracleTypedResult<Response<PendingTransaction>> {
-        let entry_function = EntryFunction::new(
-            self.get_module(module_account_address),
-            Identifier::new("initialize").unwrap(),
-            vec![],
-            vec![
-                bcs::to_bytes(&version).unwrap(),
-                bcs::to_bytes(&oracle_name).unwrap(),
-                bcs::to_bytes(&oracle_symbol).unwrap(),
-            ],
-        );
-
-        self.send_transaction(account, entry_function, options)
+        token_symbol: &str,
+    ) -> OracleTypedResult<()> {
+        let resource_resp = self
+            .api_client
+            .get_account_resource(
+                account.address(),
+                format!("{}::tokens::Aggregator", account.address().to_hex_literal()).as_str(),
+            )
             .await
             .map_err(|err| {
-                OracleError::InstructionExecutionError(format!(
-                    "The execution of add_feed failed : {}",
+                OracleError::FetchError(format!(
+                    "Failed to get_feed for symbol {} : {}",
+                    token_symbol,
                     err.to_string()
                 ))
             })
-    }
+            .unwrap();
 
-    /// Retrieves sequence number from the rest client
-    pub async fn get_sequence_number(&self, address: AccountAddress) -> OracleTypedResult<u64> {
-        let account_response = self.api_client.get_account(address).await.map_err(|err| {
-            OracleError::UnexpectedError(format!("Fetch error from aptos :  {}", err.to_string()))
-        })?;
-        let account = account_response.inner();
-        Ok(account.sequence_number)
+        let resource = resource_resp.inner().as_ref().unwrap();
+
+        //resource.data
+
+        info!("{}", resource.data);
+
+        Ok(())
     }
 }
