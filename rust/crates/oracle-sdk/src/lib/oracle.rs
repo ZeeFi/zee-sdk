@@ -16,7 +16,7 @@ use std::{
 };
 use url::Url;
 
-use crate::lib::model::{Aggregator, Token, TokenDetails};
+use crate::lib::model::{Aggregator, TokenDetails};
 
 use super::error::{OracleError, OracleTypedResult};
 
