@@ -1,4 +1,6 @@
-use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+
+use serde::{Deserialize, Deserializer, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Aggregator {
@@ -30,8 +32,8 @@ pub struct TokenDetails {
     pub decimals: u8,
     //write deserialize with
     pub last_update: String,
-    //write deserialize with
-    pub price: String,
+    #[serde(deserialize_with = "deserialize_string")]
+    pub price: u128,
 }
 
 impl Default for TokenDetails {
@@ -39,7 +41,30 @@ impl Default for TokenDetails {
         Self {
             decimals: 0,
             last_update: "".to_string(),
-            price: "0".to_string(),
+            price: 0,
         }
     }
 }
+
+fn deserialize_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    T: FromStr,
+    <T as FromStr>::Err: std::fmt::Display,
+    D: Deserializer<'de>,
+{
+    let s = <String>::deserialize(deserializer)?;
+
+    s.trim()
+        .parse::<T>()
+        .map_err(<D::Error as ::serde::de::Error>::custom)
+}
+
+// fn deserialize_string_to_date<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+// where
+//     T: FromStr,
+//     <T as FromStr>::Err: std::fmt::Display,
+//     D: Deserializer<'de>,
+// {
+//     let s = <String>::deserialize(deserializer)?;
+
+// }
