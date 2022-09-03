@@ -4,6 +4,7 @@ interface BaseApiArgs {
   wallet?: any;
   aptosAccount?: AptosAccount;
   clusterUrl: string;
+  moduleName: string;
 }
 
 export interface InitializeAggregatorOracleApiArgs extends BaseApiArgs {
@@ -28,4 +29,8 @@ export enum WalletType {
   MartianWallet,
   FewchaWallet,
   None,
+}
+
+export interface LogTokenFeedApiArgs extends BaseApiArgs {
+  tokenSymbol: string;
 }

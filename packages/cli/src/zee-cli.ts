@@ -13,6 +13,10 @@ export function programCommand(name: string) {
       '-c, --config <path>',
       'path to your aptos config.yml (generated with "aptos init")'
     )
+    .requiredOption(
+      '-m, --module-name <address::name>',
+      'full module name with address'
+    )
     .option('-p, --profile <PROFILE>', 'aptos config profile to use', 'default')
     .option('-l, --log-level <string>', 'log level', setLogLevel);
 }
@@ -41,7 +45,7 @@ programCommand('tokens:add-feed')
   .argument('<decimals>')
   .argument('<symbol>')
   .action(async (price: string, decimals: string, symbol, options) => {
-    let { profile, config } = options;
+    let { profile, config, moduleName } = options;
     //console.log(config);
     //let configPath = zee.utils.readConfig(config);
 
@@ -53,6 +57,7 @@ programCommand('tokens:add-feed')
       decimals: +decimals,
       aptosAccount: configPath.account,
       clusterUrl: zee.config.DEVNET_NODE_URL,
+      moduleName: moduleName,
     });
   });
 /********************* Add Feed  command **********************/
@@ -87,7 +92,7 @@ programCommand('tokens:initialize-aggregator')
   .argument('<name>')
 
   .action(async (id, name, options) => {
-    let { profile, config } = options;
+    let { profile, config, moduleName } = options;
 
     //console.log(config);
     let configPath = zee.utils.readConfig(config);
@@ -97,6 +102,7 @@ programCommand('tokens:initialize-aggregator')
       aptosAccount: configPath.account,
       version: +id,
       aggregratorName: name,
+      moduleName: moduleName,
     });
   });
 
@@ -110,7 +116,7 @@ programCommand('tokens:initialize-token')
   .argument('symbol')
 
   .action(async (name, symbol, options) => {
-    let { profile, config } = options;
+    let { profile, config, moduleName } = options;
 
     //console.log(config);
     let configPath = zee.utils.readConfig(config);
@@ -120,10 +126,32 @@ programCommand('tokens:initialize-token')
       aptosAccount: configPath.account,
       tokenName: name,
       tokenSymbol: symbol,
+      moduleName: moduleName,
     });
   });
 
 /********************* Initialize Token command **********************/
+
+/********************* Example Log Token command **********************/
+
+programCommand('tokens:example-log-token-feed')
+  .description('')
+  .argument('symbol')
+  .action(async (symbol, options) => {
+    let { profile, config, moduleName } = options;
+
+    //console.log(config);
+    let configPath = zee.utils.readConfig(config);
+
+    await zee.api.exampleLogTokenFeedV1({
+      clusterUrl: zee.config.DEVNET_NODE_URL,
+      aptosAccount: configPath.account,
+      tokenSymbol: symbol,
+      moduleName: moduleName,
+    });
+  });
+
+/********************* Example Log Token command **********************/
 
 program
   .configureOutput({

@@ -6,13 +6,14 @@ import {
   buildAddFeedScriptFunction,
   buildInitializeTokenScriptFunction,
   buildInitializeAggregatorScriptFunction,
+  buildExampleLogTokenFeedScriptFunction,
 } from './script-functions';
 import {
   AddFeedApiArgs,
   InitializeAggregatorOracleApiArgs,
   InitializeTokenOracleApiArgs,
+  LogTokenFeedApiArgs,
 } from './types';
-import { MODULE_NAME } from './config';
 
 // init aggregator oracle
 const initializeAggregatorOracleV1 = async (
@@ -36,7 +37,7 @@ const initializeAggregatorOracleV1 = async (
       buildInitializeAggregatorScriptFunction({
         version: args.version,
         aggregatorName: args.aggregratorName,
-        moduleName: MODULE_NAME,
+        moduleName: args.moduleName,
       });
 
     await sendTransaction(aptosClient, sender, initializeTokensOracleScript);
@@ -63,7 +64,7 @@ const initializeTokenOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
     const initializeTokensOracleScript = buildInitializeTokenScriptFunction({
       tokenName: args.tokenName,
       tokenSymbol: args.tokenSymbol,
-      moduleName: MODULE_NAME,
+      moduleName: args.moduleName,
     });
 
     await sendTransaction(aptosClient, sender, initializeTokensOracleScript);
@@ -90,7 +91,31 @@ const addFeedV1 = async (args: AddFeedApiArgs) => {
       price: args.price,
       decimals: args.decimals,
       lastUpdate: Date.now().toString(),
-      moduleName: MODULE_NAME,
+      moduleName: args.moduleName,
+    });
+
+    await sendTransaction(aptosClient, sender, addFeedScript);
+  } catch (err) {
+    throw err;
+  }
+};
+
+const exampleLogTokenFeedV1 = async (args: LogTokenFeedApiArgs) => {
+  try {
+    let sender: AptosAccount | null = null;
+    if (args.aptosAccount) {
+      sender = args.aptosAccount;
+    } else {
+      sender = getAptosAccount(args.wallet.account);
+    }
+    if (sender == null) {
+      throw new Error('Wallet not provided');
+    }
+    const aptosClient = new AptosClient(args.clusterUrl);
+
+    const addFeedScript = buildExampleLogTokenFeedScriptFunction({
+      tokenSymbol: args.tokenSymbol,
+      moduleName: args.moduleName,
     });
 
     await sendTransaction(aptosClient, sender, addFeedScript);
@@ -120,4 +145,9 @@ const addFeedV1 = async (args: AddFeedApiArgs) => {
 //   } catch (err) {}
 // };
 
-export { initializeAggregatorOracleV1, initializeTokenOracleV1, addFeedV1 };
+export {
+  initializeAggregatorOracleV1,
+  initializeTokenOracleV1,
+  addFeedV1,
+  exampleLogTokenFeedV1,
+};
