@@ -43,7 +43,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@zeefi/oracle-sdk": "^1.1.0",
+    "@zeefi/oracle-sdk": "../oracle-sdk",
     "aptos": "^1.3.7",
     "cli-progress": "^3.10.0",
     "commander": "^9.1.0",

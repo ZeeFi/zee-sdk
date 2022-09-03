@@ -39,7 +39,8 @@ programCommand('tokens:add-feed')
   .description('')
   .argument('<price>')
   .argument('<decimals>')
-  .action(async (price: string, decimals: string, options) => {
+  .argument('<symbol>')
+  .action(async (price: string, decimals: string, symbol, options) => {
     let { profile, config } = options;
     //console.log(config);
     //let configPath = zee.utils.readConfig(config);
@@ -47,6 +48,7 @@ programCommand('tokens:add-feed')
     let configPath = zee.utils.readConfig(CONFIG_PATH);
 
     await zee.api.addFeedV1({
+      tokenSymbol: symbol,
       price: +price,
       decimals: +decimals,
       aptosAccount: configPath.account,
@@ -77,29 +79,51 @@ programCommand('tokens:get-feed')
   });
 /********************* Get Feed  command **********************/
 
-/********************* Initialize command **********************/
+/********************* Initialize Aggregator command **********************/
 
-programCommand('tokens:initialize')
+programCommand('tokens:initialize-aggregator')
   .description('')
   .argument('<id>')
   .argument('<name>')
-  .argument('<symbol>')
-  .action(async (id, name, symbol, options) => {
+
+  .action(async (id, name, options) => {
     let { profile, config } = options;
 
     //console.log(config);
     let configPath = zee.utils.readConfig(config);
 
-    await zee.api.initializeTokensOracleV1({
+    await zee.api.initializeAggregatorOracleV1({
       clusterUrl: zee.config.DEVNET_NODE_URL,
       aptosAccount: configPath.account,
       version: +id,
-      oracleName: name,
-      oracleSymbol: symbol,
+      aggregratorName: name,
     });
   });
 
-/********************* Initialize command **********************/
+/********************* Initialize Aggregator command **********************/
+
+/********************* Initialize Token command **********************/
+
+programCommand('tokens:initialize-token')
+  .description('')
+  .argument('name')
+  .argument('symbol')
+
+  .action(async (name, symbol, options) => {
+    let { profile, config } = options;
+
+    //console.log(config);
+    let configPath = zee.utils.readConfig(config);
+
+    await zee.api.initializeTokenOracleV1({
+      clusterUrl: zee.config.DEVNET_NODE_URL,
+      aptosAccount: configPath.account,
+      tokenName: name,
+      tokenSymbol: symbol,
+    });
+  });
+
+/********************* Initialize Token command **********************/
 
 program
   .configureOutput({

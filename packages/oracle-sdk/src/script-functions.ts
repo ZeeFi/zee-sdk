@@ -1,9 +1,8 @@
 import { BCS, TxnBuilderTypes } from 'aptos';
 
-const buildInitializeScriptFunction = (args: {
+const buildInitializeAggregatorScriptFunction = (args: {
   version: number;
-  oracleName: string;
-  oracleSymbol: string;
+  aggregatorName: string;
   moduleName: string;
 }) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
@@ -11,31 +10,51 @@ const buildInitializeScriptFunction = (args: {
       // Fully qualified module name, `AccountAddress::ModuleName`
       args.moduleName,
       // Module function
-      'initialize',
+      'initialize_aggregator',
       [],
       [
         BCS.bcsSerializeU8(args.version),
-        BCS.bcsSerializeStr(args.oracleName),
-        BCS.bcsSerializeStr(args.oracleSymbol),
+        BCS.bcsSerializeStr(args.aggregatorName),
       ]
     )
   );
 };
 
-const buildGetFeedScriptFunction = (args: { moduleName: string }) => {
+const buildInitializeTokenScriptFunction = (args: {
+  tokenName: string;
+  tokenSymbol: string;
+  moduleName: string;
+}) => {
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
     TxnBuilderTypes.EntryFunction.natural(
       // Fully qualified module name, `AccountAddress::ModuleName`
       args.moduleName,
       // Module function
-      'get_feed',
+      'initialize_token',
       [],
-      []
+      [
+        BCS.bcsSerializeStr(args.tokenName),
+        BCS.bcsSerializeStr(args.tokenSymbol),
+      ]
     )
   );
 };
 
+// const buildGetFeedScriptFunction = (args: { moduleName: string }) => {
+//   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
+//     TxnBuilderTypes.EntryFunction.natural(
+//       // Fully qualified module name, `AccountAddress::ModuleName`
+//       args.moduleName,
+//       // Module function
+//       'get_feed',
+//       [],
+//       []
+//     )
+//   );
+// };
+
 const buildAddFeedScriptFunction = (args: {
+  tokenSymbol: string;
   price: number;
   decimals: number;
   lastUpdate: string;
@@ -49,6 +68,7 @@ const buildAddFeedScriptFunction = (args: {
       'add_feed',
       [],
       [
+        BCS.bcsSerializeStr(args.tokenSymbol),
         BCS.bcsSerializeU128(args.price),
         BCS.bcsSerializeU8(args.decimals),
         BCS.bcsSerializeStr(args.lastUpdate),
@@ -58,7 +78,7 @@ const buildAddFeedScriptFunction = (args: {
 };
 
 export {
-  buildInitializeScriptFunction,
-  buildGetFeedScriptFunction,
+  buildInitializeAggregatorScriptFunction,
+  buildInitializeTokenScriptFunction,
   buildAddFeedScriptFunction,
 };

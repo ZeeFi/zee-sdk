@@ -4,18 +4,20 @@ import { AptosClient } from 'aptos';
 import { getAptosAccount, sendTransaction } from './utils';
 import {
   buildAddFeedScriptFunction,
-  buildGetFeedScriptFunction,
-  buildInitializeScriptFunction,
+  buildInitializeTokenScriptFunction,
+  buildInitializeAggregatorScriptFunction,
 } from './script-functions';
 import {
   AddFeedApiArgs,
-  GetFeedApiArgs,
+  InitializeAggregatorOracleApiArgs,
   InitializeTokenOracleApiArgs,
 } from './types';
 import { MODULE_NAME } from './config';
 
-// todo add init token oracle
-const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
+// init aggregator oracle
+const initializeAggregatorOracleV1 = async (
+  args: InitializeAggregatorOracleApiArgs
+) => {
   try {
     let sender: AptosAccount | null = null;
     if (args.aptosAccount) {
@@ -30,10 +32,37 @@ const initializeTokensOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
 
     const aptosClient = new AptosClient(args.clusterUrl);
 
-    const initializeTokensOracleScript = buildInitializeScriptFunction({
-      version: args.version,
-      oracleName: args.oracleName,
-      oracleSymbol: args.oracleSymbol,
+    const initializeTokensOracleScript =
+      buildInitializeAggregatorScriptFunction({
+        version: args.version,
+        aggregatorName: args.aggregratorName,
+        moduleName: MODULE_NAME,
+      });
+
+    await sendTransaction(aptosClient, sender, initializeTokensOracleScript);
+  } catch (err) {
+    throw err;
+  }
+};
+
+const initializeTokenOracleV1 = async (args: InitializeTokenOracleApiArgs) => {
+  try {
+    let sender: AptosAccount | null = null;
+    if (args.aptosAccount) {
+      sender = args.aptosAccount;
+    } else {
+      sender = getAptosAccount(args.wallet.account);
+    }
+
+    if (sender == null) {
+      throw new Error('Wallet not provided');
+    }
+
+    const aptosClient = new AptosClient(args.clusterUrl);
+
+    const initializeTokensOracleScript = buildInitializeTokenScriptFunction({
+      tokenName: args.tokenName,
+      tokenSymbol: args.tokenSymbol,
       moduleName: MODULE_NAME,
     });
 
@@ -57,6 +86,7 @@ const addFeedV1 = async (args: AddFeedApiArgs) => {
     const aptosClient = new AptosClient(args.clusterUrl);
 
     const addFeedScript = buildAddFeedScriptFunction({
+      tokenSymbol: args.tokenSymbol,
       price: args.price,
       decimals: args.decimals,
       lastUpdate: Date.now().toString(),
@@ -69,27 +99,25 @@ const addFeedV1 = async (args: AddFeedApiArgs) => {
   }
 };
 
-const getFeed = async (args: GetFeedApiArgs) => {
-  try {
-    let sender: AptosAccount | null = null;
-    if (args.aptosAccount) {
-      sender = args.aptosAccount;
-    } else {
-      sender = getAptosAccount(args.wallet.account);
-    }
-    if (sender == null) {
-      throw new Error('Wallet not provided');
-    }
-    const aptosClient = new AptosClient(args.clusterUrl);
+// const getFeed = async (args: GetFeedApiArgs) => {
+//   try {
+//     let sender: AptosAccount | null = null;
+//     if (args.aptosAccount) {
+//       sender = args.aptosAccount;
+//     } else {
+//       sender = getAptosAccount(args.wallet.account);
+//     }
+//     if (sender == null) {
+//       throw new Error('Wallet not provided');
+//     }
+//     const aptosClient = new AptosClient(args.clusterUrl);
 
-    const getFeedScript = buildGetFeedScriptFunction({
-      moduleName: MODULE_NAME,
-    });
+//     const getFeedScript = buildGetFeedScriptFunction({
+//       moduleName: MODULE_NAME,
+//     });
 
-    await sendTransaction(aptosClient, sender, getFeedScript);
-  } catch (err) {}
-};
+//     await sendTransaction(aptosClient, sender, getFeedScript);
+//   } catch (err) {}
+// };
 
-//const getAccFeeds = async (args : )
-
-export { initializeTokensOracleV1, addFeedV1, getFeed };
+export { initializeAggregatorOracleV1, initializeTokenOracleV1, addFeedV1 };

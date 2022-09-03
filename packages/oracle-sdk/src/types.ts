@@ -6,15 +6,20 @@ interface BaseApiArgs {
   clusterUrl: string;
 }
 
-export interface InitializeTokenOracleApiArgs extends BaseApiArgs {
+export interface InitializeAggregatorOracleApiArgs extends BaseApiArgs {
   version: number;
-  oracleName: string;
-  oracleSymbol: string;
+  aggregratorName: string;
+}
+
+export interface InitializeTokenOracleApiArgs extends BaseApiArgs {
+  tokenName: string;
+  tokenSymbol: string;
 }
 
 export interface AddFeedApiArgs extends BaseApiArgs {
   price: number;
   decimals: number;
+  tokenSymbol: string;
 }
 
 export interface GetFeedApiArgs extends BaseApiArgs {}
