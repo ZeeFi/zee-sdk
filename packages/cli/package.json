@@ -1,6 +1,6 @@
 {
   "name": "@zeefi/cli",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "main": "./build/cli.js",
   "typings": "dist/index.d.ts",
   "author": "Srinivas Valekar <https://github.com/valekar>",
@@ -43,7 +43,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@zeefi/oracle-sdk": "../oracle-sdk",
+    "@zeefi/oracle-sdk": "^1.2.0",
     "aptos": "^1.3.7",
     "cli-progress": "^3.10.0",
     "commander": "^9.1.0",
