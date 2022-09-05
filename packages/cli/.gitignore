@@ -4,3 +4,4 @@ node_modules/**
 .DS_Store
 test-ledger
 .aptos
+dist
